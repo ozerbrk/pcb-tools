@@ -18,7 +18,7 @@
 
 import os
 from .exceptions import ParseError
-from .layers import PCBLayer, sort_layers, layer_signatures
+from .layers import PCBLayer, sort_layers
 from .common import read as gerber_read
 from .utils import listdir
 
@@ -41,14 +41,7 @@ class PCB(object):
                 camfile = gerber_read(os.path.join(directory, filename))
                 layer = PCBLayer.from_cam(camfile)
                 layers.append(layer)
-                name = os.path.splitext(filename)[0]
-                if len(os.path.splitext(filename)) > 1:
-                    _name, ext = os.path.splitext(name)
-                    if ext[1:] in layer_signatures(layer.layer_class):
-                        name = _name
-                    if layer.layer_class == 'drill' and 'drill' in ext:
-                        name = _name
-                names.add(name)
+                names.add(os.path.splitext(filename)[0])
                 if verbose:
                     print('[PCB]: Added {} layer <{}>'.format(layer.layer_class,
                                                               filename))
@@ -81,14 +74,22 @@ class PCB(object):
                         ('topsilk', 'topmask', 'top')]
         drill_layers = [l for l in self.drill_layers if 'top' in l.layers]
         # Drill layer goes under soldermask for proper rendering of tented vias
+        if not board_layers and drill_layers:
+            return [drill_layers]
+        if not board_layers and not drill_layers:
+            return []
         return [board_layers[0]] + drill_layers + board_layers[1:]
 
     @property
     def bottom_layers(self):
         board_layers = [l for l in self.layers if l.layer_class in
                         ('bottomsilk', 'bottommask', 'bottom')]
-        drill_layers = [l for l in self.drill_layers if 'bottom' in l.layers]
+        drill_layers = [l for l in self.drill_layers]
         # Drill layer goes under soldermask for proper rendering of tented vias
+        if not board_layers and drill_layers:
+            return [drill_layers]
+        if not board_layers and not drill_layers:
+            return []
         return [board_layers[0]] + drill_layers + board_layers[1:]
 
     @property
@@ -100,12 +101,6 @@ class PCB(object):
         return list(reversed([layer for layer in self.layers if
                               layer.layer_class in
                               ('top', 'bottom', 'internal')]))
-
-    @property
-    def outline_layer(self):
-        for layer in self.layers:
-            if layer.layer_class == 'outline':
-                return layer
 
     @property
     def layer_count(self):

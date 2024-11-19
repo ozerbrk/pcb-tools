@@ -22,98 +22,66 @@ from collections import namedtuple
 from . import common
 from .excellon import ExcellonFile
 from .ipc356 import IPCNetlist
+from dataclasses import dataclass
+from typing import List
 
 
-Hint = namedtuple('Hint', 'layer ext name regex content')
+@dataclass
+class Hint:
+    layer: str
+    ext: List[str]
+    keywords: List[str]
 
 hints = [
-    Hint(layer='top',
-         ext=['gtl', 'cmp', 'top', ],
-         name=['art01', 'top', 'GTL', 'layer1', 'soldcom', 'comp', 'F.Cu', ],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='bottom',
-         ext=['gbl', 'sld', 'bot', 'sol', 'bottom', ],
-         name=['art02', 'bottom', 'bot', 'GBL', 'layer2', 'soldsold', 'B.Cu', ],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='internal',
-         ext=['in', 'gt1', 'gt2', 'gt3', 'gt4', 'gt5', 'gt6',
-              'g1', 'g2', 'g3', 'g4', 'g5', 'g6', ],
-         name=['art', 'internal', 'pgp', 'pwr', 'gnd', 'ground',
-               'gp1', 'gp2', 'gp3', 'gp4', 'gt5', 'gp6',
-               'In1.Cu', 'In2.Cu', 'In3.Cu', 'In4.Cu',
-               'group3', 'group4', 'group5', 'group6', 'group7', 'group8', ],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='topsilk',
-         ext=['gto', 'sst', 'plc', 'ts', 'skt', 'topsilk', ],
-         name=['sst01', 'topsilk', 'silk', 'slk', 'sst', 'F.SilkS'],
-         regex='',
-         content=[]
-         ),
     Hint(layer='bottomsilk',
-         ext=['gbo', 'ssb', 'pls', 'bs', 'skb', 'bottomsilk', ],
-         name=['bsilk', 'ssb', 'botsilk', 'bottomsilk', 'B.SilkS'],
-         regex='',
-         content=[]
-         ),
+         ext=['gbo', 'ssb', 'pls', 'bs', 'skb', 'bottomsilk'],
+         keywords=['bottomsilk', 'bsilk', 'silkscreen','botsilk', 'b.silks', 'bottom_silk', 'b_silk', 'silkscreen_bottom', 'bottom', 'gbo', 'ssb', 'pls', 'bs', 'skb', 'bottomsilk']),
+    Hint(layer='topsilk',
+         ext=['gto', 'sst', 'plc', 'ts', 'skt', 'topsilk'],
+         keywords=['topsilk', 'sst01', 'silk', 'silkscreen', 'slk', 'f.silks', 'top_silk', 'f_silk', 'silkscreen_top', 'top', 'gto', 'sst', 'plc', 'ts', 'skt', 'topsilk']),
     Hint(layer='topmask',
-         ext=['gts', 'stc', 'tmk', 'smt', 'tr', 'topmask', ],
-         name=['sm01', 'cmask', 'tmask', 'mask1', 'maskcom', 'topmask',
-               'mst', 'F.Mask', ],
-         regex='',
-         content=[]
-         ),
+         ext=['gts', 'stc', 'tmk', 'smt', 'tr', 'topmask'],
+         keywords=['topmask', 'sm01', 'cmask', 'tmask', 'mask1', 'maskcom', 'mst', 'f.mask', 'soldermask_top', 'top_mask', 'smdmask_top', 'top', 'gts', 'stc', 'tmk', 'smt', 'tr', 'topmask']),
     Hint(layer='bottommask',
-         ext=['gbs', 'sts', 'bmk', 'smb', 'br', 'bottommask', ],
-         name=['sm', 'bmask', 'mask2', 'masksold', 'botmask', 'bottommask',
-               'msb', 'B.Mask', ],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='toppaste',
-         ext=['gtp', 'tm', 'toppaste', ],
-         name=['sp01', 'toppaste', 'pst', 'F.Paste'],
-         regex='',
-         content=[]
-         ),
-    Hint(layer='bottompaste',
-         ext=['gbp', 'bm', 'bottompaste', ],
-         name=['sp02', 'botpaste', 'bottompaste', 'psb', 'B.Paste', ],
-         regex='',
-         content=[]
-         ),
+         ext=['gbs', 'sts', 'bmk', 'smb', 'br', 'bottommask'],
+         keywords=['bottommask', 'sm', 'bmask', 'mask2', 'masksold', 'botmask', 'msb', 'b.mask', 'soldermask_bottom', 'bottom_mask', 'smdmask_bottom', 'bottom', 'gbs', 'sts', 'bmk', 'smb', 'br', 'bottommask']),
+    Hint(layer='internal',
+         ext=['in', 'gt1', 'gt2', 'gt3', 'gt4', 'gt5', 'gt6', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6'],
+         keywords=['internal', 'in1.cu', 'in2.cu', 'in3.cu', 'in4.cu', 'inner1', 'inner2', 'inner3', 'inner4', 'inner5', 'inner6', 'copper_inner', 'in', 'gt1', 'gt2', 'gt3', 'gt4', 'gt5', 'gt6', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6']),
+    Hint(layer='bottom',
+         ext=['gbl', 'sld', 'bot', 'sol', 'bottom'],
+         keywords=['bottom', 'bot', 'b.cu', 'layer2', 'copper_bottom', 'gbl', 'sld', 'bot', 'sol', 'bottom']),
+    Hint(layer='top',
+         ext=['gtl', 'cmp', 'top'],
+         keywords=['top', 'f.cu', 'layer1', 'copper_top', 'gtl', 'cmp', 'top']),
     Hint(layer='outline',
-         ext=['gko', 'outline', ],
-         name=['BDR', 'border', 'out', 'outline', 'Edge.Cuts', ],
-         regex='',
-         content=[]
-         ),
+         ext=['gko', 'outline'],
+         keywords=['outline', 'edge.cuts', 'border', 'bdr', 'gko', 'outline', 'routing', 'cevre']),
+    Hint(layer='toppaste',
+         ext=['gtp', 'tm', 'toppaste'],
+         keywords=['toppaste', 'sp01', 'pst', 'f.paste', 'gtp', 'tm', 'toppaste']),
+    Hint(layer='bottompaste',
+         ext=['gbp', 'bm', 'bottompaste'],
+         keywords=['bottompaste', 'sp02', 'botpaste', 'psb', 'b.paste', 'gbp', 'bm', 'bottompaste']),
+    Hint(layer='drill',
+         ext=['drl', 'drill'],
+         keywords=['drl', 'drill']),
     Hint(layer='ipc_netlist',
          ext=['ipc'],
-         name=[],
-         regex='',
-         content=[]
-         ),
+         keywords=[]),
     Hint(layer='drawing',
          ext=['fab'],
-         name=['assembly drawing', 'assembly', 'fabrication',
-               'fab drawing', 'fab'],
-         regex='',
-         content=[]
-         ),
+         keywords=['assembly drawing', 'assembly', 'fabrication', 'fab drawing', 'fab']),
+    # ... other hints ...
 ]
-
-
-def layer_signatures(layer_class):
-    for hint in hints:
-        if hint.layer == layer_class:
-            return hint.ext + hint.name
-    return []
+    # re.compile(r'(\.GTL|gtl|top.*copper|copper.*top|F_Cu)', re.IGNORECASE): 'top_copper',
+  #   re.compile(r'(\.GBL|gbl|bottom.*copper|copper.*bottom|B_Cu)', re.IGNORECASE): 'bottom_copper',
+   #   re.compile(r'(\.GTS|gts|top_mask|top.*mask|mask.*top|F_Mask)', re.IGNORECASE): 'top_mask',
+   # re.compile(r'(\.GBS|gbs|bottom_mask|bottom.*mask|mask.*bottom|B_Mask)', re.IGNORECASE): 'bottom_mask',
+    #  re.compile(r'(\.GTO|gto|top_silk|top.*silk|silk.*top|F_Silk)', re.IGNORECASE): 'top_silk',
+    #   re.compile(r'(\.GBO|gbo|bottom_silk|bottom.*silk|silk.*bottom|B_Silk)', re.IGNORECASE): 'bottom_silk',
+    #  re.compile(r'(\.DRL|drl|drill)', re.IGNORECASE): 'drill',
+    #   re.compile(r'(\.GKO|gko|outline)', re.IGNORECASE): 'outline'
 
 
 def load_layer(filename):
@@ -123,29 +91,52 @@ def load_layer(filename):
 def load_layer_data(data, filename=None):
     return PCBLayer.from_cam(common.loads(data, filename))
 
-
 def guess_layer_class(filename):
     try:
-        layer = guess_layer_class_by_content(filename)
-        if layer:
-            return layer
-    except:
-        pass
+        print(f"Processing file: {filename}")
+        directory, filename_only = os.path.split(filename)
+        name, ext = os.path.splitext(filename_only.lower())
+        ext = ext[1:]  # Remove the dot from the extension
 
-    try:
-        directory, filename = os.path.split(filename)
-        name, ext = os.path.splitext(filename.lower())
+        name_ext = f"{name}.{ext}"
+        print(f"Filename without path: {filename_only}")
+        print(f"Name: {name}, Extension: {ext}")
+
+        # First, check for extension matches
         for hint in hints:
-            if hint.regex:
-                if re.findall(hint.regex, filename, re.IGNORECASE):
-                    return hint.layer
-
-            patterns = [r'^(\w*[.-])*{}([.-]\w*)?$'.format(x) for x in hint.name]
-            if ext[1:] in hint.ext or any(re.findall(p, name, re.IGNORECASE) for p in patterns):
+            if hasattr(hint, 'ext') and ext in hint.ext:
+                print(f"Matched by extension '{ext}' with layer '{hint.layer}'")
                 return hint.layer
-    except:
-        pass
-    return 'unknown'
+
+        # If no extension match, proceed to search for keywords
+        max_score = 0
+        selected_layer = 'unknown'
+
+        for hint in hints:
+            score = 0
+            for keyword in hint.keywords:
+                if keyword.lower() in name_ext:
+                    # Assign higher score for longer keywords
+                    keyword_score = len(keyword)
+                    score += keyword_score
+                    print(f"Keyword '{keyword}' matched in '{name_ext}' for layer '{hint.layer}' with score {keyword_score}")
+
+            if score > max_score:
+                max_score = score
+                selected_layer = hint.layer
+            elif score == max_score and score > 0:
+                pass  # Tie-breaker logic can be implemented here if needed
+
+        if selected_layer != 'unknown':
+            print(f"Selected layer '{selected_layer}' with score {max_score}")
+        else:
+            print("No matching layer found based on keywords.")
+        return selected_layer
+
+    except Exception as e:
+        print(f"Error processing {filename}: {e}")
+        return 'unknown'
+
 
 
 def guess_layer_class_by_content(filename):
@@ -156,6 +147,7 @@ def guess_layer_class_by_content(filename):
                 if len(hint.content) > 0:
                     patterns = [r'^(.*){}(.*)$'.format(x) for x in hint.content]
                     if any(re.findall(p, line, re.IGNORECASE) for p in patterns):
+                        print(f"Matched:  {filename} for layer {hint.layer}")
                         return hint.layer
     except:
         pass

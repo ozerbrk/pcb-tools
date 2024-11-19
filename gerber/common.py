@@ -20,25 +20,29 @@ from . import excellon
 from . import ipc356
 from .exceptions import ParseError
 from .utils import detect_file_format
+import chardet
 
 
+
+# In gerber/common.py
 def read(filename):
-    """ Read a gerber or excellon file and return a representative object.
+    with open(filename, 'rb') as f:
+        data_bytes = f.read()
 
-    Parameters
-    ----------
-    filename : string
-        Filename of the file to read.
+    # Detect encoding
+    result = chardet.detect(data_bytes)
+    encoding = result['encoding']
+    confidence = result['confidence']
+    print(f"Detected encoding '{encoding}' with confidence {confidence} for file '{filename}'")
 
-    Returns
-    -------
-    file : CncFile subclass
-        CncFile object representing the file, either GerberFile, ExcellonFile,
-        or IPCNetlist. Returns None if file is not of the proper type.
-    """
-    with open(filename, 'rU') as f:
-        data = f.read()
+    if encoding:
+        data = data_bytes.decode(encoding)
+    else:
+        # Fallback to 'latin-1' if encoding cannot be detected
+        data = data_bytes.decode('latin-1')
+
     return loads(data, filename)
+
 
 
 def loads(data, filename=None):
