@@ -34,28 +34,7 @@ class PCB(object):
         directory = os.path.abspath(directory)
         if not os.path.isdir(directory):
             raise TypeError('{} is not a directory.'.format(directory))
-        # Function to recursively load files
-        def load_files(directory):
-            for entry in os.scandir(directory):
-                if entry.is_dir():
-                    load_files(entry.path)  # Recursively load files
-                elif entry.is_file():
-                    filename = entry.name
-                    try:
-                        camfile = gerber_read(entry.path)
-                        layer = PCBLayer.from_cam(camfile)
-                        layers.append(layer)
-                        names.add(os.path.splitext(filename)[0])
-                        if verbose:
-                            print(f'[PCB]: Added {layer.layer_class} layer <{filename}>')
-                    except ParseError:
-                        if verbose:
-                            print(f'[PCB]: Skipping file {filename}')
-                    except IOError:
-                        if verbose:
-                            print(f'[PCB]: Skipping file {filename}')
-
-        load_files(directory)
+        
         # Load gerber files
         for filename in listdir(directory, True, True):
             try:
