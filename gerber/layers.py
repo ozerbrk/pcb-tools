@@ -35,16 +35,16 @@ class Hint:
 hints = [
     Hint(layer='bottomsilk',
          ext=['gbo', 'ssb', 'pls', 'bs', 'skb', 'bottomsilk'],
-         keywords=['bottomsilk', 'bsilk', 'silkscreen','botsilk', 'b.silks', 'bottom_silk', 'b_silk', 'silkscreen_bottom', 'bottom', 'gbo', 'ssb', 'pls', 'bs', 'skb', 'bottomsilk']),
+         keywords=['bottomsilk', 'bsilk', 'silkscreen','botsilk', 'b.silks', 'bottom_silk', 'b_silk', 'silkscreen_bottom', 'bottom', 'gbo', 'ssb', 'pls', 'bs', 'skb', 'silkbottom']),
     Hint(layer='topsilk',
          ext=['gto', 'sst', 'plc', 'ts', 'skt', 'topsilk'],
-         keywords=['topsilk', 'sst01', 'silk', 'silkscreen', 'slk', 'f.silks', 'top_silk', 'f_silk', 'silkscreen_top', 'top', 'gto', 'sst', 'plc', 'ts', 'skt', 'topsilk']),
+         keywords=['topsilk', 'sst01', 'silk', 'silkscreen', 'slk', 'f.silks', 'top_silk', 'f_silk', 'silkscreen_top', 'top', 'gto', 'sst', 'plc', 'ts', 'skt', 'silktop']),
     Hint(layer='topmask',
          ext=['gts', 'stc', 'tmk', 'smt', 'tr', 'topmask'],
-         keywords=['topmask', 'sm01', 'cmask', 'tmask', 'mask1', 'maskcom', 'mst', 'f.mask', 'soldermask_top', 'top_mask', 'smdmask_top', 'top', 'gts', 'stc', 'tmk', 'smt', 'tr', 'topmask']),
+         keywords=['topmask', 'sm01', 'cmask', 'tmask', 'mask1', 'maskcom', 'mst', 'f.mask', 'soldermask_top', 'top_mask', 'smdmask_top', 'top', 'gts', 'stc', 'tmk', 'smt', 'tr', 'masktop']),
     Hint(layer='bottommask',
          ext=['gbs', 'sts', 'bmk', 'smb', 'br', 'bottommask'],
-         keywords=['bottommask', 'sm', 'bmask', 'mask2', 'masksold', 'botmask', 'msb', 'b.mask', 'soldermask_bottom', 'bottom_mask', 'smdmask_bottom', 'bottom', 'gbs', 'sts', 'bmk', 'smb', 'br', 'bottommask']),
+         keywords=['bottommask', 'sm', 'bmask', 'mask2', 'masksold', 'botmask', 'msb', 'b.mask', 'soldermask_bottom', 'bottom_mask', 'smdmask_bottom', 'bottom', 'gbs', 'sts', 'bmk', 'smb', 'br', 'maskbottom']),
     Hint(layer='internal',
          ext=['in', 'gt1', 'gt2', 'gt3', 'gt4', 'gt5', 'gt6', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6'],
          keywords=['internal', 'in1.cu', 'in2.cu', 'in3.cu', 'in4.cu', 'inner1', 'inner2', 'inner3', 'inner4', 'inner5', 'inner6', 'copper_inner', 'in', 'gt1', 'gt2', 'gt3', 'gt4', 'gt5', 'gt6', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6']),
@@ -59,10 +59,10 @@ hints = [
          keywords=['outline', 'edge.cuts', 'border', 'bdr', 'gko', 'outline', 'routing', 'cevre']),
     Hint(layer='toppaste',
          ext=['gtp', 'tm', 'toppaste'],
-         keywords=['toppaste', 'sp01', 'pst', 'f.paste', 'gtp', 'tm', 'toppaste']),
+         keywords=['toppaste', 'sp01', 'pst', 'f.paste', 'gtp', 'tm', 'pastetop', 'paste', 'past']),
     Hint(layer='bottompaste',
          ext=['gbp', 'bm', 'bottompaste'],
-         keywords=['bottompaste', 'sp02', 'botpaste', 'psb', 'b.paste', 'gbp', 'bm', 'bottompaste']),
+         keywords=['bottompaste', 'sp02', 'botpaste', 'psb', 'b.paste', 'gbp', 'bm', 'pastebottom', 'paste', 'past', 'pastebot']),
     Hint(layer='drill',
          ext=['drl', 'drill'],
          keywords=['drl', 'drill']),
@@ -117,7 +117,7 @@ def guess_layer_class(filename):
             for keyword in hint.keywords:
                 if keyword.lower() in name_ext:
                     # Assign higher score for longer keywords
-                    keyword_score = len(keyword)
+                    keyword_score = len(keyword)**2
                     score += keyword_score
                     print(f"Keyword '{keyword}' matched in '{name_ext}' for layer '{hint.layer}' with score {keyword_score}")
 
