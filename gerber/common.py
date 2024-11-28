@@ -70,6 +70,6 @@ def loads(data, filename=None):
         return excellon.loads(data, filename=filename)
     elif fmt == 'ipc_d_356':
         print("File name: ", filename, "Detected file format: IPC-D-356")
-        return None
+        return ipc356.loads(data, filename=filename)
     else:
         raise ParseError('Unable to detect file format')
