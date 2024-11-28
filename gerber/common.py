@@ -23,7 +23,6 @@ from .utils import detect_file_format
 import chardet
 
 
-
 # In gerber/common.py
 def read(filename):
     with open(filename, 'rb') as f:
@@ -42,8 +41,6 @@ def read(filename):
         data = data_bytes.decode('latin-1')
 
     return loads(data, filename)
-
-
 
 def loads(data, filename=None):
     """ Read gerber or excellon file contents from a string and return a
