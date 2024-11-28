@@ -63,10 +63,13 @@ def loads(data, filename=None):
 
     fmt = detect_file_format(data)
     if fmt == 'rs274x':
+        print("File name: ", filename, "Detected file format: RS-274X")
         return rs274x.loads(data, filename=filename)
     elif fmt == 'excellon':
+        print("File name: ", filename, "Detected file format: Excellon")
         return excellon.loads(data, filename=filename)
     elif fmt == 'ipc_d_356':
+        print("File name: ", filename, "Detected file format: IPC-D-356")
         return ipc356.loads(data, filename=filename)
     else:
         raise ParseError('Unable to detect file format')
