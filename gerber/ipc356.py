@@ -314,8 +314,15 @@ class IPC356_TestRecord(object):
             record['plated'] = (line[37 + offset] == 'P')
 
         if len(line) >= (40 + offset):
-            end = len(line) - 1 if len(line) < (42 + offset) else (41 + offset)
-            record['access'] = access[int(line[39 + offset:end])]
+            try:
+                end = len(line) - 1 if len(line) < (42 + offset) else (41 + offset)
+                access_index = int(line[39 + offset:end].strip())
+                if 0 <= access_index < len(access):
+                    record['access'] = access[access_index]
+                else:
+                    record['access'] = 'unknown'  # Fallback for invalid index
+            except (ValueError, IndexError):
+                record['access'] = 'unknown'  # Handle parsing or range issues gracefully
 
         if len(line) >= (43 + offset):
             end = len(line) - 1 if len(line) < (50 + offset) else (49 + offset)
